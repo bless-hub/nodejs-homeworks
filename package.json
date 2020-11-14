@@ -1,10 +1,11 @@
 {
   "name": "nodejs-homeworks",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,12 @@
   "bugs": {
     "url": "https://github.com/bless-hub/nodejs-homeworks/issues"
   },
-  "homepage": "https://github.com/bless-hub/nodejs-homeworks#readme"
+  "homepage": "https://github.com/bless-hub/nodejs-homeworks#readme",
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  },
+  "dependencies": {
+    "yargs": "^16.1.0"
+  }
 }
