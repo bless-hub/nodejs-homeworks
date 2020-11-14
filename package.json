@@ -1,0 +1,19 @@
+{
+  "name": "nodejs-homeworks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bless-hub/nodejs-homeworks.git"
+  },
+  "author": "Vlad Bondarenko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bless-hub/nodejs-homeworks/issues"
+  },
+  "homepage": "https://github.com/bless-hub/nodejs-homeworks#readme"
+}
