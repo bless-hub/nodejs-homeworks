@@ -5,19 +5,19 @@ const contacts = require("./contacts.js");
 function invokeAction({ action, id, name, email, phone }) {
   switch (action) {
     case "list":
-      contacts.listContacts();
+      contacts.listContacts().then((data) => console.table(data));
       break;
 
     case "get":
-      contacts.getContactById();
+      contacts.getContactById(id);
       break;
 
     case "add":
-      // ... name email phone
+      contacts.addContact(name, email, phone);
       break;
 
     case "remove":
-      // ... id
+      contacts.removeContact(id);
       break;
 
     default:
