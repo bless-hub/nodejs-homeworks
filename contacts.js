@@ -40,10 +40,13 @@ async function addContact(id, name, email, phone) {
 
   const contacts = await listContacts();
   const newContacts = [...contacts, contact];
-  const writeNewContact = JSON.stringify(newContacts, null, 5);
-  fs.writeFile(contactsPath, writeNewContact)
-    .then(console.log(`contact name ${name} mail ${email} added`))
-    .catch((error) => console.log(error));
+  // const writeNewContact = await fs.writeFile(
+  //   newContacts,
+  //   JSON.stringify(contacts, null, 5)
+  // );
+  return JSON.parse(await fs.readFile(newContacts));
+  // .then(console.log(`contact name ${name} mail ${email} added`))
+  // .catch((error) => console.log(error));
 }
 
 module.exports = {

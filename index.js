@@ -31,8 +31,10 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const contacts = require("./contacts.js");
+const bodyParser = require("body-parser");
 
 app.use(express.json());
+const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 app.get("/contacts", async (req, res, next) => {
   const getListContacts = await contacts.listContacts();
@@ -42,7 +44,16 @@ app.get("/contacts", async (req, res, next) => {
 app.get("/contacts/:contactId", async (req, res, next) => {
   const id = parseInt(req.params.contactId);
   const getContactId = await contacts.getContactById(id);
-  return res.send(getContactId);
+  if (getContactId) {
+    return res.send(getContactId);
+  } else {
+    res.status(400).send({ message: "not found" });
+  }
+});
+app.post("/contacts", async (req, res, next) => {
+  console.log(res.body);
+  const addContact = await contacts.addContact(req.body);
+  res.send(addContact);
 });
 
 app.listen(3000, () => {
