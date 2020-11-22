@@ -30,7 +30,7 @@ async function removeContact(contactId) {
   console.log("Contact id #", contactId, "deleted");
 }
 
-async function addContact(id, name, email, phone) {
+async function addContact({ name, email, phone }) {
   const contact = {
     id: uuidv4(),
     name: name,
@@ -40,13 +40,9 @@ async function addContact(id, name, email, phone) {
 
   const contacts = await listContacts();
   const newContacts = [...contacts, contact];
-  // const writeNewContact = await fs.writeFile(
-  //   newContacts,
-  //   JSON.stringify(contacts, null, 5)
-  // );
-  return JSON.parse(await fs.readFile(newContacts));
-  // .then(console.log(`contact name ${name} mail ${email} added`))
-  // .catch((error) => console.log(error));
+  const writeNewContact = await JSON.stringify(newContacts, null, 5);
+  fs.writeFile(contactsPath, writeNewContact);
+  return newContacts;
 }
 
 module.exports = {

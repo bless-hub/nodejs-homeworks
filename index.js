@@ -50,11 +50,20 @@ app.get("/contacts/:contactId", async (req, res, next) => {
     res.status(400).send({ message: "not found" });
   }
 });
-app.post("/contacts", async (req, res, next) => {
-  console.log(res.body);
-  const addContact = await contacts.addContact(req.body);
-  res.send(addContact);
-});
+
+app.post(
+  "/contacts",
+  (req, res, next) => {},
+  async (req, res, next) => {
+    const { name, email, phone } = req.body;
+    const addContact = await contacts.addContact(req.body);
+
+    return res.json({
+      status: 200,
+      data: addContact,
+    });
+  }
+);
 
 app.listen(3000, () => {
   console.log("Example app listening on port 3000!");
