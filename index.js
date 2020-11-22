@@ -31,10 +31,9 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const contacts = require("./contacts.js");
-const bodyParser = require("body-parser");
+const Joi = require("joi");
 
 app.use(express.json());
-const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 app.get("/contacts", async (req, res, next) => {
   const getListContacts = await contacts.listContacts();
@@ -53,18 +52,33 @@ app.get("/contacts/:contactId", async (req, res, next) => {
 
 app.post(
   "/contacts",
-  (req, res, next) => {},
+  (req, res, next) => {
+    // validation
+    const schema = Joi.object({
+      name: Joi.string().required(),
+      email: Joi.string().required(),
+      phone: Joi.string().required(),
+    });
+    const validationResult = schema.validate(req.body);
+
+    if (validationResult.error) {
+      return res.status(400).json({
+        status: 400,
+        message: "not found",
+      });
+    }
+    next();
+  },
   async (req, res, next) => {
     const { name, email, phone } = req.body;
     const addContact = await contacts.addContact(req.body);
 
-    return res.json({
+    return res.status(200).json({
       status: 200,
       data: addContact,
     });
   }
-);
-
-app.listen(3000, () => {
-  console.log("Example app listening on port 3000!");
-});
+),
+  app.listen(3000, () => {
+    console.log("Example app listening on port 3000!");
+  });
