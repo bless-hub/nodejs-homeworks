@@ -79,6 +79,28 @@ app.post(
     });
   }
 ),
-  app.listen(3000, () => {
-    console.log("Example app listening on port 3000!");
+  app.delete("/contacts/:contactId", async (req, res, next) => {
+    const id = parseInt(req.params.contactId);
+    const getContactId = await contacts.getContactById(id);
+    const remove = await contacts.removeContact(id);
+    if (!getContactId) {
+      res.send({ message: "fdsdf" });
+    } else {
+      res.send({ message: "contact deleted" });
+    }
   });
+
+app.patch("/contacts/:contactId", async (req, res, next) => {
+  const id = parseInt(req.params.contactId);
+  const update = await contacts.updateContact(id);
+  console.log(update);
+
+  return res.status(200).json({
+    status: 200,
+    data: update,
+  });
+});
+
+app.listen(3000, () => {
+  console.log("Example app listening on port 3000!");
+});

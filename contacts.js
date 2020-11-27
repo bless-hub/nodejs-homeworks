@@ -1,9 +1,8 @@
 // contacts.js
 
 const fs = require("fs").promises;
-const { constants } = require("buffer");
 const path = require("path");
-const { v4: uuidv4 } = require("uuid");
+const { v4: uuidv5 } = require("uuid");
 
 const contactsPath = path.join(__dirname, "./db/contacts.json");
 
@@ -28,11 +27,12 @@ async function removeContact(contactId) {
   const newContacts = array.filter((contact) => contact.id !== contactId);
   fs.writeFile(contactsPath, JSON.stringify(newContacts, null, ""));
   console.log("Contact id #", contactId, "deleted");
+  return newContacts;
 }
 
 async function addContact({ name, email, phone }) {
   const contact = {
-    id: uuidv4(),
+    id: parseInt(uuidv5()),
     name: name,
     email: email,
     phone: phone,
@@ -44,10 +44,22 @@ async function addContact({ name, email, phone }) {
   fs.writeFile(contactsPath, writeNewContact);
   return newContacts;
 }
+async function updateContact(contactId, object) {
+  const contacts = await listContacts();
+  const foundContact = contacts.find((el) => el.id === contactId);
+  const updateData = contacts.filter((el) => el.id !== contactId);
+  const newContact = { ...foundContact, ...object };
+  fs.writeFile(
+    contactsPath,
+    JSON.stringify([...updateData, newContact], null, 2)
+  );
+  return newContact;
+}
 
 module.exports = {
   listContacts,
   getContactById,
   removeContact,
   addContact,
+  updateContact,
 };
