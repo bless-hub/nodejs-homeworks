@@ -1,22 +1,25 @@
 // contacts.js
 
 const fs = require("fs").promises;
-const { constants } = require("buffer");
 const path = require("path");
+const { v4: uuidv5 } = require("uuid");
 
 const contactsPath = path.join(__dirname, "./db/contacts.json");
 
 // TODO: задокументировать каждую функцию
 
-function listContacts() {
-  return fs.readFile(contactsPath).then((data) => {
-    return JSON.parse(data);
-  });
+async function listContacts() {
+  const data = JSON.parse(await fs.readFile(contactsPath, "utf-8"));
+  return data;
 }
 
 async function getContactById(contactId) {
   const contacts = await listContacts();
-  console.table(contacts.find((contact) => contact.id === contactId));
+  const contactWithId = await contacts.find(
+    (contact) => contact.id === contactId
+  );
+  console.log(contactWithId);
+  return contactWithId;
 }
 
 async function removeContact(contactId) {
@@ -24,10 +27,12 @@ async function removeContact(contactId) {
   const newContacts = array.filter((contact) => contact.id !== contactId);
   fs.writeFile(contactsPath, JSON.stringify(newContacts, null, ""));
   console.log("Contact id #", contactId, "deleted");
+  return newContacts;
 }
 
-async function addContact(name, email, phone) {
+async function addContact({ name, email, phone }) {
   const contact = {
+    id: parseInt(uuidv5()),
     name: name,
     email: email,
     phone: phone,
@@ -35,10 +40,20 @@ async function addContact(name, email, phone) {
 
   const contacts = await listContacts();
   const newContacts = [...contacts, contact];
-  const writeNewContact = JSON.stringify(newContacts, null, 5);
-  fs.writeFile(contactsPath, writeNewContact)
-    .then(console.log(`contact name ${name} mail ${email} added`))
-    .catch((error) => console.log(error));
+  const writeNewContact = await JSON.stringify(newContacts, null, 5);
+  fs.writeFile(contactsPath, writeNewContact);
+  return newContacts;
+}
+async function updateContact(contactId, object) {
+  const contacts = await listContacts();
+  const foundContact = contacts.find((el) => el.id === contactId);
+  const updateData = contacts.filter((el) => el.id !== contactId);
+  const newContact = { ...foundContact, ...object };
+  fs.writeFile(
+    contactsPath,
+    JSON.stringify([...updateData, newContact], null, 2)
+  );
+  return newContact;
 }
 
 module.exports = {
@@ -46,4 +61,5 @@ module.exports = {
   getContactById,
   removeContact,
   addContact,
+  updateContact,
 };
