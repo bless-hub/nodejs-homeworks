@@ -2,16 +2,18 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const appRouter = require("./appRouter");
+const mongoose = require("mongoose");
 
 module.exports = class UsersContactsServer {
   constructor() {
     this.server = null;
   }
 
-  start() {
+  async start() {
     this.initServer();
     this.initMiddlwares();
     this.initRoutes();
+    await this.initDataBase();
     this.startListening();
   }
 
@@ -25,12 +27,27 @@ module.exports = class UsersContactsServer {
   }
 
   initRoutes() {
-    this.server.use("/api", appRouter);
+    this.server.use("/contacts", appRouter);
+  }
+
+  async initDataBase() {
+    const urlDb = process.env.DB_HOST;
+    try {
+      await mongoose.connect(urlDb, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+        useFindAndModify: false,
+      });
+      console.log("Database connection successful");
+    } catch (e) {
+      process.exit(1);
+    }
   }
 
   startListening() {
     this.server.listen(3000, () => {
-      console.log("Server running", process.env.PORT);
+      console.log("Server is running", process.env.PORT);
     });
   }
 };
