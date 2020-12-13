@@ -17,7 +17,7 @@ appRouter.delete("/:contactId", ContactController.removeContact);
 
 appRouter.patch(
   "/:contactId",
-  ContactController.validContact,
+  ContactController.validContactUpdate,
   ContactController.updateContact
 );
 
