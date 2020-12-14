@@ -54,8 +54,8 @@ class ContactModel {
     return token;
   };
 
-  logOut = async (userId) => {
-    return await this.updateToken(userId, null);
+  logOut = async (id) => {
+    return await this.updateToken(id, null);
   };
 }
 

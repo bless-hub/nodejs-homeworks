@@ -74,11 +74,11 @@ class AuthController {
 
   logoutController = async (req, res, next) => {
     try {
-      const user = await ContactModel.findById(id);
+      const user = req.user;
+      await ContactModel.findById(user._id);
       await ContactModel.logOut(user);
-      console.log(user);
 
-      res.status(204).send({ message: "you need login" });
+      res.status(204).send({ message: "you are need login" });
     } catch (e) {
       next(e);
     }
