@@ -1,10 +1,11 @@
 const express = require("express");
 const cors = require("cors");
-
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
 require("dotenv").config();
 const appRouter = require("../contacts/appRouter");
+const usersRouter = require("../auth/usersRouters");
 const authRouter = require("../auth/authRouters");
-const mongoose = require("mongoose");
 
 module.exports = class UsersContactsServer {
   constructor() {
@@ -31,6 +32,7 @@ module.exports = class UsersContactsServer {
   initRoutes() {
     this.server.use("/contacts", appRouter);
     this.server.use("/auth", authRouter);
+    this.server.use("/users", usersRouter);
   }
 
   async initDataBase() {

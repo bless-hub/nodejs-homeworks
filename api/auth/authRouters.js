@@ -4,12 +4,6 @@ const AuthController = require("./authController");
 
 const authRouter = Router();
 
-authRouter.get(
-  "/current",
-  //   AuthController.authorize,
-  AuthController.getUserController
-);
-
 authRouter.post(
   "/register",
   AuthController.validateAuth,
@@ -22,10 +16,6 @@ authRouter.post(
   AuthController.loginController
 );
 
-authRouter.post(
-  "/logout",
-  AuthController.authorize,
-  AuthController.logoutController
-);
+authRouter.post("/logout", AuthController.logoutController);
 
 module.exports = authRouter;

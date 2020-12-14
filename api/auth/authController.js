@@ -4,8 +4,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 require("dotenv").config();
 const ContactModel = require("../model/model");
-
-const User = require("../schema/users.schema");
+const SECRET = process.env.JWT_SECRET_KEY;
 
 class AuthController {
   getUserController = async (req, res, next) => {
@@ -27,31 +26,47 @@ class AuthController {
 
   registrationController = async (req, res, next) => {
     try {
-      const { email, username, password } = req.body;
-      const user = await ContactModel.findByEmail(email);
+      const { email } = req.body;
+      const user = await ContactModel.findByEmail({ email });
+      console.log(user);
       if (user) {
-        return res.status(409).send("'message': 'Email in use'");
+        res.status(409).json({ message: " email in use" });
       }
-      const newUser = await Users.createUser(req.body);
-      res.status(201).json("user:", newUser);
+      const newUser = await ContactModel.createUser(req.body);
+      return res.status(201).json({
+        user: {
+          email: newUser.email,
+          subscription: newUser.subscription,
+        },
+      });
     } catch (e) {
-      next(e);
+      return res.status(500).json({
+        message: e.message,
+      });
     }
   };
 
   loginController = async (req, res, next) => {
     try {
       const { email, password } = req.body;
-
-      const user = await ContactModel.findByEmail(email);
+      console.log(req.body);
+      const user = await ContactModel.findByEmail({ email });
       const isPasswordValid = await bcrypt.compare(password, user.password);
+      console.log(user);
+      console.log(isPasswordValid);
 
       if (!user || !isPasswordValid) {
-        return res.status(401).send("Email or password is wrong");
+        return res.status(401).send({ message: "Email or password is wrong" });
       }
 
       const token = await ContactModel.login(user);
-      res.status(200).json(`token: ${token}, user: ${user}`);
+      res.status(200).json({
+        user: {
+          token,
+          email: user.email,
+          subscription: user.subscription,
+        },
+      });
     } catch (e) {
       next(e);
     }
@@ -59,29 +74,30 @@ class AuthController {
 
   logoutController = async (req, res, next) => {
     try {
-      const user = req.user;
+      const user = await ContactModel.findById(id);
+      await ContactModel.logOut(user);
+      console.log(user);
 
-      await UsersModel.logout(user._id);
-      res.status(204).send("No Content");
+      res.status(204).send({ message: "you need login" });
     } catch (e) {
       next(e);
     }
   };
 
-  authorize = async (req, res, next) => {
+  authorization = async (req, res, next) => {
     try {
       const authorizationHeader = req.get("Authorization") || "";
       const token = authorizationHeader.replace("Bearer ", "");
       let userId;
 
       try {
-        userId = await jwt.verify(token, process.env.JWT_SECRET_KEY).id;
+        userId = await jwt.verify(token, SECRET).id;
       } catch (e) {
         console.log("error", e);
         next(res.status(401).json({ message: "Not authorized" }));
       }
 
-      const user = await UsersModel.findById(userId);
+      const user = await ContactModel.findById(userId);
       if (!user || user.token !== token) {
         throw new UnauthorizedError("Not authorized");
       }
@@ -95,11 +111,11 @@ class AuthController {
 
   validateAuth = (req, res, next) => {
     const schema = Joi.object({
+      name: Joi.string(),
       email: Joi.string().required(),
       password: Joi.string().required(),
     });
     const validationRes = schema.validate(req.body);
-
     if (validationRes.error) {
       return res
         .status(400)
