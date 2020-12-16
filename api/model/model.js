@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 require("dotenv").config();
 const SECRET = process.env.JWT_SECRET_KEY;
+const avatar = require("../helpers/avatar-builder");
 
 class ContactModel {
   constructor() {}
@@ -34,6 +35,7 @@ class ContactModel {
   createUser = async (data) => {
     const { email, subscription, password } = data;
     const user = new User({ email, subscription });
+    user.avatarURL = `localhost:3000/images/${user._id}.png`;
     user.setPassword(password);
     return user.save();
   };

@@ -33,6 +33,7 @@ class AuthController {
         res.status(409).json({ message: " email in use" });
       }
       const newUser = await ContactModel.createUser(req.body);
+
       return res.status(201).json({
         user: {
           email: newUser.email,

@@ -12,6 +12,7 @@ const userSchema = new Schema(
     email: {
       type: String,
     },
+    avatarURL: String,
     subscription: {
       type: String,
       enum: ["free", "pro", "premium"],
