@@ -7,6 +7,7 @@ const ContactModel = require("../model/model");
 const SECRET = process.env.JWT_SECRET_KEY;
 const fs = require("fs");
 const path = require("path");
+
 IMG_DIR = "api/public/images";
 
 class AuthController {
@@ -34,6 +35,7 @@ class AuthController {
 
       if (user) {
         res.status(409).json({ message: " email in use" });
+        return;
       }
       const newUser = await ContactModel.createUser(req.body);
       console.log(newUser);
@@ -131,6 +133,7 @@ class AuthController {
       res
         .status(200)
         .json(`avatarURL: 'localhost:3000/images/${req.file.filename}'`);
+      next();
     } catch (e) {
       next(e);
     }

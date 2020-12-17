@@ -15,7 +15,8 @@ const randomAvatar = async (user) => {
       console.log("moove img");
     });
   } catch (error) {
-    console.log(error);
+    console.log("netusera");
+    return;
   }
 };
 

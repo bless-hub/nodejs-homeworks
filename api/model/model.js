@@ -41,6 +41,7 @@ class ContactModel {
     user.setPassword(password);
     return user.save();
   };
+
   updateUser = async (id, data) => {
     return await User.findByIdAndUpdate(id, data, {
       new: true,

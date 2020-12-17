@@ -16,7 +16,7 @@ usersRouter.patch(
   "/avatar",
   AuthController.authorization,
   upload.single("avatar"),
-  minifyImg,
+  moovedFile,
   AuthController.updateAvatar
 );
 
