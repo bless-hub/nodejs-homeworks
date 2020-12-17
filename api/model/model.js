@@ -5,6 +5,8 @@ const dotenv = require("dotenv");
 require("dotenv").config();
 const SECRET = process.env.JWT_SECRET_KEY;
 
+const randomAvatar = require("../helpers/avatar-builder");
+
 class ContactModel {
   constructor() {}
   getContacts = async () => {
@@ -34,8 +36,16 @@ class ContactModel {
   createUser = async (data) => {
     const { email, subscription, password } = data;
     const user = new User({ email, subscription });
+    randomAvatar(user);
+    user.avatarURL = `localhost:3000/images/${user._id}.png`;
     user.setPassword(password);
     return user.save();
+  };
+
+  updateUser = async (id, data) => {
+    return await User.findByIdAndUpdate(id, data, {
+      new: true,
+    });
   };
 
   findById = async (id) => {
