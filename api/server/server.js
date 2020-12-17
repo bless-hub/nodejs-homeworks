@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const path = require("path");
 
 const dotenv = require("dotenv");
 require("dotenv").config();
@@ -27,7 +28,7 @@ module.exports = class UsersContactsServer {
 
   initMiddlwares() {
     this.server.use(express.static("tmp"));
-    this.server.use(express.static("api/public/images"));
+    this.server.use(express.static(path.join("api/public")));
     this.server.use(express.json());
     this.server.use(cors({ origin: "http://localhost:3000" }));
   }

@@ -1,14 +1,22 @@
 const Avatar = require("avatar-builder");
-const fs = require("fs");
+const path = require("path");
+const fs = require("fs-extra");
 
-const avatar = Avatar.builder(
-  Avatar.Image.margin(Avatar.Image.circleMask(Avatar.Image.identicon())),
-  128,
-  128,
-  { cache: Avatar.Cache.lru() }
-);
-avatar
-  .create("gabriel")
-  .then((buffer) => fs.writeFileSync(`tmp/${Date.now()}.png`, buffer));
+const IMG_DIR = path.join(process.cwd(), "api", "public", "images", "/");
 
-module.exports = avatar;
+const avatar = Avatar.male8bitBuilder(128);
+
+const randomAvatar = async (user) => {
+  try {
+    await avatar.create(user._id).then((tmp) => {
+      const avatarFileName = `${user._id}.png`;
+      fs.writeFileSync(`tmp/${avatarFileName}`, tmp);
+      fs.move(`tmp/${user._id}.png`, path.join(IMG_DIR, avatarFileName));
+      console.log("moove img");
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports = randomAvatar;

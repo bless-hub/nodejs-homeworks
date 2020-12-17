@@ -5,6 +5,9 @@ const dotenv = require("dotenv");
 require("dotenv").config();
 const ContactModel = require("../model/model");
 const SECRET = process.env.JWT_SECRET_KEY;
+const fs = require("fs");
+const path = require("path");
+IMG_DIR = "api/public/images";
 
 class AuthController {
   getUserController = async (req, res, next) => {
@@ -28,11 +31,12 @@ class AuthController {
     try {
       const { email } = req.body;
       const user = await ContactModel.findByEmail({ email });
-      console.log(user);
+
       if (user) {
         res.status(409).json({ message: " email in use" });
       }
       const newUser = await ContactModel.createUser(req.body);
+      console.log(newUser);
 
       return res.status(201).json({
         user: {
@@ -107,6 +111,28 @@ class AuthController {
       next();
     } catch (err) {
       next(err);
+    }
+  };
+
+  updateAvatar = async (req, res, next) => {
+    try {
+      const user = req.user;
+      const string = req.user.avatarURL;
+      await ContactModel.updateUser(user._id, {
+        avatarURL: `localhost:3000/images/${req.file.filename}`,
+      });
+      const fileName = string.slice(21);
+      await fs.unlink(path.join(IMG_DIR, fileName), (err) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+      });
+      res
+        .status(200)
+        .json(`avatarURL: 'localhost:3000/images/${req.file.filename}'`);
+    } catch (e) {
+      next(e);
     }
   };
 
