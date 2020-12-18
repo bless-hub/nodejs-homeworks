@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const ContactModel = require("../model/model");
+const ContactModel = require("./contact.model");
 
 class ContactController {
   getListContacts = async (req, res, next) => {

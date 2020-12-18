@@ -3,8 +3,9 @@ const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 require("dotenv").config();
-const ContactModel = require("../model/model");
+const UsersModel = require("../users/users.model");
 const SECRET = process.env.JWT_SECRET_KEY;
+const sendVerificationEmail = require("../helpers/send.mail");
 const fs = require("fs");
 const path = require("path");
 
@@ -31,14 +32,16 @@ class AuthController {
   registrationController = async (req, res, next) => {
     try {
       const { email } = req.body;
-      const user = await ContactModel.findByEmail({ email });
+      const user = await UsersModel.findByEmail({ email });
 
       if (user) {
         res.status(409).json({ message: " email in use" });
         return;
       }
-      const newUser = await ContactModel.createUser(req.body);
+      const newUser = await UsersModel.createUser(req.body);
       console.log(newUser);
+
+      await sendVerificationEmail(newUser);
 
       return res.status(201).json({
         user: {
@@ -53,20 +56,37 @@ class AuthController {
     }
   };
 
+  verifyEmail = async (req, res, next) => {
+    try {
+      const { token } = req.params;
+      const userVerify = await UsersModel.findByVerificationToken(token);
+
+      if (!userVerify) {
+        throw new NotFoundError("User not found");
+      }
+
+      await UsersModel.updateVerifyUser(userVerify._id);
+
+      return res.status(200).send("You are successful verified");
+    } catch (error) {
+      next(error);
+    }
+  };
+
   loginController = async (req, res, next) => {
     try {
       const { email, password } = req.body;
       console.log(req.body);
-      const user = await ContactModel.findByEmail({ email });
+      const user = await UsersModel.findByEmail({ email });
       const isPasswordValid = await bcrypt.compare(password, user.password);
       console.log(user);
       console.log(isPasswordValid);
 
-      if (!user || !isPasswordValid) {
+      if (!user || !isPasswordValid || user.status !== "Verified") {
         return res.status(401).send({ message: "Email or password is wrong" });
       }
 
-      const token = await ContactModel.login(user);
+      const token = await UsersModel.login(user);
       res.status(200).json({
         user: {
           token,
@@ -82,8 +102,8 @@ class AuthController {
   logoutController = async (req, res, next) => {
     try {
       const user = req.user;
-      await ContactModel.findById(user._id);
-      await ContactModel.logOut(user);
+      await UsersModel.findById(user._id);
+      await UsersModel.logOut(user);
 
       res.status(204).send({ message: "you are need login" });
     } catch (e) {
@@ -104,7 +124,7 @@ class AuthController {
         next(res.status(401).json({ message: "Not authorized" }));
       }
 
-      const user = await ContactModel.findById(userId);
+      const user = await UsersModel.findById(userId);
       if (!user || user.token !== token) {
         throw new UnauthorizedError("Not authorized");
       }
@@ -120,7 +140,7 @@ class AuthController {
     try {
       const user = req.user;
       const string = req.user.avatarURL;
-      await ContactModel.updateUser(user._id, {
+      await UsersModel.updateUser(user._id, {
         avatarURL: `localhost:3000/images/${req.file.filename}`,
       });
       const fileName = string.slice(21);
