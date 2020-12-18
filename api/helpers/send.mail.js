@@ -15,7 +15,8 @@ async function sendVerificationEmail(user) {
     from: process.env.EMAIL_USER, // Use the email address or domain you verified above
     subject: "Sending with Twilio SendGrid is Fun",
     text: "and easy to do anywhere, even with Node.js",
-    html: `<a href = "http://localhost:3000/users/verify/${verificationToken}"> Click here </a>`,
+    html: `
+    your account needs to be verified, follow this link to verify <a href = "http://localhost:3000/users/verify/${verificationToken}"> Click here </a>`,
   };
 
   //ES8
