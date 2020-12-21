@@ -1,4 +1,3 @@
-const Contact = require("../schema/contacts.schema");
 const User = require("../schema/users.schema");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
@@ -7,25 +6,8 @@ const SECRET = process.env.JWT_SECRET_KEY;
 
 const randomAvatar = require("../helpers/avatar-builder");
 
-class ContactModel {
+class UsersModel {
   constructor() {}
-  getContacts = async () => {
-    return await Contact.find();
-  };
-  getContactById = async (contactId) => {
-    return await Contact.findById(contactId);
-  };
-  addContact = async (data) => {
-    return await Contact.create(data);
-  };
-  updateContact = async (contactId, data) => {
-    return await Contact.findByIdAndUpdate(contactId, data, {
-      new: true,
-    });
-  };
-  removeContact = async (contactId) => {
-    return await Contact.findByIdAndRemove(contactId);
-  };
 
   //=================hw4===================//
 
@@ -67,6 +49,38 @@ class ContactModel {
   logOut = async (id) => {
     return await this.updateToken(id, null);
   };
+
+  //===========6HW=========================
+
+  createVerificationToken = async (id, verificationToken) => {
+    return User.findByIdAndUpdate(
+      id,
+      {
+        status: "Created",
+        verificationToken,
+      },
+      { new: true }
+    );
+  };
+
+  findByVerificationToken = async (verificationToken) => {
+    return User.findOne({
+      verificationToken,
+    });
+  };
+
+  updateVerifyUser = async (id) => {
+    return User.findByIdAndUpdate(
+      id,
+      {
+        status: "Verified",
+        verificationToken: null,
+      },
+      {
+        new: true,
+      }
+    );
+  };
 }
 
-module.exports = new ContactModel();
+module.exports = new UsersModel();

@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const upload = require("../helpers/multer.js");
 const moovedFile = require("../helpers/filemoove");
-const AuthController = require("./authController");
+const AuthController = require("../auth/authController");
 const minifyImg = require("../helpers/minifyimg");
 
 const usersRouter = Router();
@@ -19,5 +19,6 @@ usersRouter.patch(
   moovedFile,
   AuthController.updateAvatar
 );
+usersRouter.get("/verify/:verifyToken", AuthController.verifyEmail);
 
 module.exports = usersRouter;

@@ -5,8 +5,8 @@ const path = require("path");
 
 const dotenv = require("dotenv");
 require("dotenv").config();
-const appRouter = require("../contacts/appRouter");
-const usersRouter = require("../auth/usersRouters");
+const contactRouter = require("../contacts/contact.router");
+const usersRouter = require("../users/usersRouters");
 const authRouter = require("../auth/authRouters");
 
 module.exports = class UsersContactsServer {
@@ -34,7 +34,7 @@ module.exports = class UsersContactsServer {
   }
 
   initRoutes() {
-    this.server.use("/contacts", appRouter);
+    this.server.use("/contacts", contactRouter);
     this.server.use("/auth", authRouter);
     this.server.use("/users", usersRouter);
   }
